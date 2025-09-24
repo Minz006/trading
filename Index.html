@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Isi Data</title>
+  <style>
+    /* ====== RESET ====== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2, #43cea2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* ====== FORM WRAPPER ====== */
+    .form-container {
+      backdrop-filter: blur(15px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 30px 25px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      animation: fadeIn 0.6s ease-in-out;
+      color: #fff;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+      color: #fff;
+    }
+
+    /* ====== FORM INPUTS ====== */
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: #f0f0f0;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      outline: none;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #ddd;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: #fff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+
+    textarea {
+      resize: none;
+      min-height: 100px;
+    }
+
+    /* ====== BUTTON ====== */
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* ====== ALERT BOX ====== */
+    .alert {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      animation: slideDown 0.4s ease;
+    }
+    .alert.success { background: rgba(46, 204, 113, 0.8); color: #fff; }
+    .alert.warning { background: rgba(241, 196, 15, 0.85); color: #333; }
+    .alert.danger  { background: rgba(231, 76, 60, 0.9); color: #fff; }
+
+/*     .alert button {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  color: inherit;
+  cursor: pointer;
+} */
+
+    /* ====== ANIMATION ====== */
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-15px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes slideDown {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Data Trading Harian</h2>
+    <form id="dataForm" autocomplete="off">
+      
+      <div class="form-group">
+        <label for="type">Jenis</label>
+        <select id="type" name="type" required>
+          <option value="">-- Pilih --</option>
+          <option value="winner">Profit</option>
+          <option value="losser">Loss</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nominal">Nominal</label>
+        <input step="0.01" type="number" id="nominal" name="nominal" placeholder="$ x,xx" required>
+      </div>
+      <div class="form-group">
+        <label for="lot">Lot</label>
+        <input type="number" id="lot" name="lot" placeholder="0.01" required step="0.01">
+      </div>
+
+    <div class="form-group">
+      <label for="waktu">Waktu</label>
+      <input type="date" name="waktu" id="waktu" required/>
+    </div>
+
+      <button type="submit" class="btn-submit">Kirim Data</button>
+      <div id="alertBox"></div>
+    </form>
+  </div>
+
+
+
+ <script>
+  const form = document.getElementById("dataForm");
+  const alertBox = document.getElementById("alertBox");
+  const url = "https://script.google.com/macros/s/AKfycbw7k_YI-SG1fKUozrXqsFr8IUvCUha4HMYWBJJzy19vKRTKqAOYntmfYGJwFlX81IIUIw/exec"; // ganti dengan URL GAS Anda
+ 
+  // set tanggal otomatis
+  function setTanggal() {
+    document.getElementById("waktu").valueAsDate = new Date();
+  }
+  document.addEventListener("DOMContentLoaded", setTanggal);
+
+  // tampilkan alert
+  function showAlert(type, message) {
+    alertBox.innerHTML = `
+      <div class="alert ${type}">
+        <span>${message}</span>
+      </div>
+    `;
+    setTimeout(function() {
+      alertBox.innerHTML = ""
+    }, 4000);
+  }
+
+  // proses submit
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+      showAlert("warning", "⚡ Mengirim data, harap tunggu...");
+      const formData = new FormData(form);
+
+      const res = await fetch(url, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) throw new Error("Jaringan bermasalah!");
+
+      const data = await res.json();
+
+      if (data && data.row) {
+        showAlert("success", `✅ Data berhasil disimpan di barisan ${data.row}`);
+        form.reset();
+        setTanggal();
+      } else {
+        throw new Error("Format respon tidak sesuai!");
+      }
+
+    } catch (err) {
+      console.error(err);
+      showAlert("danger", "❌ Data gagal dikirim, coba lagi.");
+    }
+  });
+</script>
+</body>
+</html>
